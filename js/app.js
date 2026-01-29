@@ -21,11 +21,11 @@ function initMockData() {
     }
     if (!localStorage.getItem('menu')) {
         localStorage.setItem('menu', JSON.stringify([
-            { id: '1', name: 'Gourmet Burger', price: 12.99, category: 'Main', available: true, image: 'assets/burger.png' },
-            { id: '2', name: 'Penne Arrabbiata', price: 10.50, category: 'Pasta', available: true, image: 'assets/pasta.png' },
-            { id: '3', name: 'Mexican Tacos', price: 9.50, category: 'Main', available: true, image: 'assets/tacos.png' },
-            { id: '4', name: 'Glazed Donuts', price: 5.50, category: 'Dessert', available: true, image: 'assets/donuts.png' },
-            { id: '5', name: 'Premium Pizza', price: 15.99, category: 'Main', available: true, image: 'assets/pizza.png' }
+            { id: '1', name: 'Gourmet Burger', price: 180.00, category: 'Main', available: true, image: 'assets/burger.png' },
+            { id: '2', name: 'Penne Arrabbiata', price: 250.00, category: 'Pasta', available: true, image: 'assets/pasta.png' },
+            { id: '3', name: 'Mexican Tacos', price: 150.00, category: 'Main', available: true, image: 'assets/tacos.png' },
+            { id: '4', name: 'Glazed Donuts', price: 80.00, category: 'Dessert', available: true, image: 'assets/donuts.png' },
+            { id: '5', name: 'Premium Pizza', price: 350.00, category: 'Main', available: true, image: 'assets/pizza.png' }
         ]));
     }
     if (!localStorage.getItem('orders')) {
@@ -118,7 +118,7 @@ function startSession() {
         renderAdminNav();
         viewAllOrders();
     } else {
-        document.getElementById('user-balance').innerText = `$${currentUser.balance.toFixed(2)}`;
+        document.getElementById('user-balance').innerText = `₹${currentUser.balance.toFixed(2)}`;
         renderCustomerNav();
         viewMenu();
     }
@@ -171,7 +171,7 @@ async function viewMenu() {
             </div>
             <span class="category">${item.category}</span>
             <h4>${item.name}</h4>
-            <span class="price">$${item.price.toFixed(2)}</span>
+            <span class="price">₹${item.price.toFixed(2)}</span>
             <button class="btn-small" onclick="orderItem('${item.id}', '${item.name}', ${item.price})">Add to Order</button>
         `;
         container.appendChild(card);
@@ -207,7 +207,7 @@ async function orderItem(id, name, price) {
 
             alert("Order placed successfully!");
             cart = [];
-            document.getElementById('user-balance').innerText = `$${currentUser.balance.toFixed(2)}`;
+            document.getElementById('user-balance').innerText = `₹${currentUser.balance.toFixed(2)}`;
             viewMyOrders();
             return;
         }
@@ -250,7 +250,7 @@ async function viewMyOrders() {
         row.innerHTML = `
             <td>#${o.orderId}</td>
             <td>${o.items.map(i => i.foodName + ' x' + i.quantity).join(', ')}</td>
-            <td>$${o.totalAmount.toFixed(2)}</td>
+            <td>₹${o.totalAmount.toFixed(2)}</td>
             <td><span class="badge">${o.status}</span></td>
         `;
     });
@@ -275,7 +275,7 @@ async function viewAllOrders() {
         row.innerHTML = `
             <td>#${o.orderId}</td>
             <td>${o.customerId.substring(0, 8)}</td>
-            <td>$${o.totalAmount.toFixed(2)}</td>
+            <td>₹${o.totalAmount.toFixed(2)}</td>
             <td><span class="badge">${o.status}</span></td>
             <td>
                 <select onchange="updateStatus('${o.orderId}', this.value)">
@@ -332,7 +332,7 @@ async function adminViewMenu() {
         const row = table.insertRow();
         row.innerHTML = `
             <td>${item.name}</td>
-            <td>$${item.price.toFixed(2)}</td>
+            <td>₹${item.price.toFixed(2)}</td>
             <td>${item.category}</td>
             <td>${item.available ? '✅' : '❌'}</td>
             <td><button class="btn-small" style="background:var(--accent)" onclick="deleteItem('${item.id}')">Delete</button></td>
