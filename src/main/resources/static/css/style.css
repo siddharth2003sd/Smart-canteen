@@ -1,26 +1,31 @@
 :root {
-    --primary: #111827;
-    --primary-hover: #000000;
-    --bg-light: #ffffff;
-    --text-main: #111827;
-    --text-dim: #6b7280;
-    --card-bg: #ffffff;
-    --card-border: #e5e7eb;
-    --accent: #f3f4f6;
-    --success: #10b981;
-    --danger: #ef4444;
+    --primary: #ff7e5f;
+    /* Warm Orange */
+    --primary-hover: #feb47b;
+    /* Tomato Red */
+    --bg-light: #fff9f0;
+    /* Creamy White */
+    --text-main: #2d3436;
+    --text-dim: #636e72;
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(255, 255, 255, 0.4);
+    --accent: #2ecc71;
+    /* Fresh Green */
+    --success: #2ecc71;
+    --danger: #e74c3c;
+    --juicy-gradient: linear-gradient(135deg, #ff7e5f, #feb47b);
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Quicksand', 'Outfit', sans-serif;
 }
 
 body {
-    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85)),
-        url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop');
+    background: linear-gradient(rgba(255, 249, 240, 0.7), rgba(255, 249, 240, 0.4)),
+        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -33,6 +38,36 @@ body {
 .background-blobs {
     display: none;
     /* Minimal means clean */
+}
+
+.floating-food {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.food-icon {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.15;
+    animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-40px) rotate(20deg);
+    }
 }
 
 @keyframes move {
@@ -55,24 +90,20 @@ body {
 
 .glass-card {
     background: var(--card-bg);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 3rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-}
-
-/* Auth Styles */
-#auth-section {
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+    border-radius: 30px;
+    padding: 3.5rem;
+    box-shadow: 0 20px 40px rgba(255, 126, 95, 0.1);
 }
 
 h1 {
-    font-size: 2.25rem;
+    font-size: 2.75rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
-    color: var(--primary);
+    margin-bottom: 0.25rem;
+    background: var(--juicy-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
@@ -127,19 +158,21 @@ input:focus {
 
 .btn-primary {
     width: 100%;
-    padding: 12px;
-    background: var(--primary);
+    padding: 14px;
+    background: var(--juicy-gradient);
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     color: #ffffff;
-    font-weight: 500;
+    font-weight: 700;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 20px rgba(255, 126, 95, 0.2);
 }
 
 .btn-primary:hover {
-    background: var(--primary-hover);
-    transform: none;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 25px rgba(255, 126, 95, 0.3);
 }
 
 /* Dashboard Styles */
@@ -242,23 +275,23 @@ input:focus {
 .food-card {
     background: #ffffff;
     border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 1rem;
-    transition: all 0.2s;
+    border-radius: 20px;
+    padding: 1.25rem;
+    transition: all 0.3s;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
 }
 
 .food-card:hover {
-    border-color: var(--text-dim);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 30px rgba(255, 126, 95, 0.1);
 }
 
 .food-img-container {
     width: 100%;
-    height: 140px;
-    border-radius: 8px;
+    height: 160px;
+    border-radius: 15px;
     overflow: hidden;
     margin-bottom: 1rem;
-    background: #f3f4f6;
 }
 
 .food-img-container img {
