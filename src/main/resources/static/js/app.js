@@ -1,5 +1,39 @@
 let currentUser = null;
 let currentAuthMode = 'login';
+let isLiveDemo = false;
+
+// Auto-detect if running on GitHub Pages or static host
+async function checkApiAvailability() {
+    try {
+        const res = await fetch('/api/menu', { method: 'GET' });
+        if (!res.ok) throw new Error();
+        isLiveDemo = false;
+    } catch (e) {
+        console.log("Running in Live Demo mode (LocalStorage)");
+        isLiveDemo = true;
+        initMockData();
+    }
+}
+
+function initMockData() {
+    if (!localStorage.getItem('users')) {
+        localStorage.setItem('users', JSON.stringify([{ id: 'admin-1', username: 'admin', password: '123', role: 'ADMIN' }]));
+    }
+    if (!localStorage.getItem('menu')) {
+        localStorage.setItem('menu', JSON.stringify([
+            { id: '1', name: 'Gourmet Burger', price: 180.00, category: 'Main', available: true, image: 'assets/burger.png' },
+            { id: '2', name: 'Penne Arrabbiata', price: 250.00, category: 'Pasta', available: true, image: 'assets/pasta.png' },
+            { id: '3', name: 'Mexican Tacos', price: 150.00, category: 'Main', available: true, image: 'assets/tacos.png' },
+            { id: '4', name: 'Glazed Donuts', price: 80.00, category: 'Dessert', available: true, image: 'assets/donuts.png' },
+            { id: '5', name: 'Premium Pizza', price: 350.00, category: 'Main', available: true, image: 'assets/pizza.png' }
+        ]));
+    }
+    if (!localStorage.getItem('orders')) {
+        localStorage.setItem('orders', JSON.stringify([]));
+    }
+}
+
+checkApiAvailability();
 
 function showAuth(mode) {
     currentAuthMode = mode;
@@ -15,7 +49,12 @@ async function handleAuth(e) {
     const msg = document.getElementById('auth-msg');
 
     const endpoint = currentAuthMode === 'login' ? '/api/login' : '/api/register';
-    
+
+    if (isLiveDemo) {
+        handleDemoAuth(username, password, msg);
+        return;
+    }
+
     try {
         const res = await fetch(endpoint, {
             method: 'POST',
@@ -29,7 +68,7 @@ async function handleAuth(e) {
                 startSession();
             } else {
                 msg.innerText = "Success! Now please login.";
-                msg.style.color = "#10b981";
+                msg.style.color = "var(--success)";
                 showAuth('login');
             }
         } else {
@@ -42,18 +81,44 @@ async function handleAuth(e) {
     }
 }
 
+function handleDemoAuth(username, password, msg) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (currentAuthMode === 'login') {
+        const user = users.find(u => u.username === username && u.password === password);
+        if (user) {
+            currentUser = user;
+            if (user.role === 'CUSTOMER' && !user.balance) user.balance = 100.0;
+            startSession();
+        } else {
+            msg.innerText = "Invalid credentials";
+            msg.style.color = "#f43f5e";
+        }
+    } else {
+        if (users.find(u => u.username === username)) {
+            msg.innerText = "User exists";
+            msg.style.color = "#f43f5e";
+            return;
+        }
+        users.push({ id: Date.now().toString(), username, password, role: 'CUSTOMER', balance: 100.0 });
+        localStorage.setItem('users', JSON.stringify(users));
+        msg.innerText = "Success! Now login.";
+        msg.style.color = "#10b981";
+        showAuth('login');
+    }
+}
+
 function startSession() {
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     document.getElementById('welcome-text').innerText = `Hello, ${currentUser.username}`;
     document.getElementById('user-role-badge').innerText = currentUser.role;
-    
+
     if (currentUser.role === 'ADMIN') {
         document.getElementById('balance-container').classList.add('hidden');
         renderAdminNav();
         viewAllOrders();
     } else {
-        document.getElementById('user-balance').innerText = `$${currentUser.balance.toFixed(2)}`;
+        document.getElementById('user-balance').innerText = `₹${currentUser.balance.toFixed(2)}`;
         renderCustomerNav();
         viewMenu();
     }
@@ -84,20 +149,29 @@ function renderCustomerNav() {
 
 // Logic implementations
 async function viewMenu() {
-    const res = await fetch('/api/menu');
-    const menu = await res.json();
+    let menu;
+    if (isLiveDemo) {
+        menu = JSON.parse(localStorage.getItem('menu') || '[]');
+    } else {
+        const res = await fetch('/api/menu');
+        menu = await res.json();
+    }
+
     const main = document.getElementById('main-view');
     main.innerHTML = '<h3>Available Delicacies</h3><div class="menu-grid" id="menu-container"></div>';
-    
+
     const container = document.getElementById('menu-container');
     menu.forEach(item => {
         if (!item.available) return;
         const card = document.createElement('div');
         card.className = 'food-card';
         card.innerHTML = `
+            <div class="food-img-container">
+                <img src="${item.image || 'assets/default.png'}" alt="${item.name}">
+            </div>
             <span class="category">${item.category}</span>
             <h4>${item.name}</h4>
-            <span class="price">$${item.price.toFixed(2)}</span>
+            <span class="price">₹${item.price.toFixed(2)}</span>
             <button class="btn-small" onclick="orderItem('${item.id}', '${item.name}', ${item.price})">Add to Order</button>
         `;
         container.appendChild(card);
@@ -108,15 +182,42 @@ let cart = [];
 async function orderItem(id, name, price) {
     const qty = prompt(`How many ${name}?`, "1");
     if (!qty) return;
-    
+
     cart.push({ foodItemId: id, foodName: name, quantity: parseInt(qty), priceAtTime: price });
     if (confirm(`Added! Cart has ${cart.length} items. Place order now?`)) {
+        if (isLiveDemo) {
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const total = cart.reduce((acc, i) => acc + (i.priceAtTime * i.quantity), 0);
+            if (currentUser.balance < total) { alert("Insufficient funds"); cart = []; return; }
+
+            const newOrder = {
+                orderId: Math.random().toString(36).substr(2, 6).toUpperCase(),
+                customerId: currentUser.id,
+                items: cart,
+                totalAmount: total,
+                status: 'PLACED'
+            };
+            orders.push(newOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            currentUser.balance -= total;
+            const users = JSON.parse(localStorage.getItem('users'));
+            const uIdx = users.findIndex(u => u.id === currentUser.id);
+            users[uIdx] = currentUser;
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert("Order placed successfully!");
+            cart = [];
+            document.getElementById('user-balance').innerText = `₹${currentUser.balance.toFixed(2)}`;
+            viewMyOrders();
+            return;
+        }
+
         const res = await fetch(`/api/orders/${currentUser.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cart)
         });
-        
+
         if (res.ok) {
             alert("Order placed successfully!");
             cart = [];
@@ -132,18 +233,24 @@ async function orderItem(id, name, price) {
 }
 
 async function viewMyOrders() {
-    const res = await fetch(`/api/orders/${currentUser.id}`);
-    const orders = await res.json();
+    let orders;
+    if (isLiveDemo) {
+        orders = JSON.parse(localStorage.getItem('orders') || '[]').filter(o => o.customerId === currentUser.id);
+    } else {
+        const res = await fetch(`/api/orders/${currentUser.id}`);
+        orders = await res.json();
+    }
+
     const main = document.getElementById('main-view');
     main.innerHTML = '<h3>My Order History</h3><table id="orders-table"><tr><th>ID</th><th>Items</th><th>Total</th><th>Status</th></tr></table>';
-    
+
     const table = document.getElementById('orders-table');
     orders.forEach(o => {
         const row = table.insertRow();
         row.innerHTML = `
             <td>#${o.orderId}</td>
             <td>${o.items.map(i => i.foodName + ' x' + i.quantity).join(', ')}</td>
-            <td>$${o.totalAmount.toFixed(2)}</td>
+            <td>₹${o.totalAmount.toFixed(2)}</td>
             <td><span class="badge">${o.status}</span></td>
         `;
     });
@@ -151,18 +258,24 @@ async function viewMyOrders() {
 
 // Admin Actions
 async function viewAllOrders() {
-    const res = await fetch('/api/orders');
-    const orders = await res.json();
+    let orders;
+    if (isLiveDemo) {
+        orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    } else {
+        const res = await fetch('/api/orders');
+        orders = await res.json();
+    }
+
     const main = document.getElementById('main-view');
     main.innerHTML = '<h3>Incoming Orders</h3><table id="all-orders"><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Action</th></tr></table>';
-    
+
     const table = document.getElementById('all-orders');
     orders.forEach(o => {
         const row = table.insertRow();
         row.innerHTML = `
             <td>#${o.orderId}</td>
-            <td>${o.customerId.substring(0,8)}</td>
-            <td>$${o.totalAmount.toFixed(2)}</td>
+            <td>${o.customerId.substring(0, 8)}</td>
+            <td>₹${o.totalAmount.toFixed(2)}</td>
             <td><span class="badge">${o.status}</span></td>
             <td>
                 <select onchange="updateStatus('${o.orderId}', this.value)">
@@ -178,6 +291,16 @@ async function viewAllOrders() {
 
 async function updateStatus(id, status) {
     if (!status) return;
+
+    if (isLiveDemo) {
+        const orders = JSON.parse(localStorage.getItem('orders'));
+        const oIdx = orders.findIndex(o => o.orderId === id);
+        orders[oIdx].status = status;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        viewAllOrders();
+        return;
+    }
+
     await fetch(`/api/orders/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -187,8 +310,14 @@ async function updateStatus(id, status) {
 }
 
 async function adminViewMenu() {
-    const res = await fetch('/api/menu');
-    const menu = await res.json();
+    let menu;
+    if (isLiveDemo) {
+        menu = JSON.parse(localStorage.getItem('menu') || '[]');
+    } else {
+        const res = await fetch('/api/menu');
+        menu = await res.json();
+    }
+
     const main = document.getElementById('main-view');
     main.innerHTML = `
         <header style="display:flex; justify-content:space-between; align-items:center mb:1rem">
@@ -197,13 +326,13 @@ async function adminViewMenu() {
         </header>
         <table id="admin-menu"><tr><th>Name</th><th>Price</th><th>Category</th><th>Available</th><th>Actions</th></tr></table>
     `;
-    
+
     const table = document.getElementById('admin-menu');
     menu.forEach(item => {
         const row = table.insertRow();
         row.innerHTML = `
             <td>${item.name}</td>
-            <td>$${item.price.toFixed(2)}</td>
+            <td>₹${item.price.toFixed(2)}</td>
             <td>${item.category}</td>
             <td>${item.available ? '✅' : '❌'}</td>
             <td><button class="btn-small" style="background:var(--accent)" onclick="deleteItem('${item.id}')">Delete</button></td>
@@ -217,6 +346,14 @@ async function addItemPrompt() {
     const category = prompt("Category:");
     if (!name || !price) return;
 
+    if (isLiveDemo) {
+        const menu = JSON.parse(localStorage.getItem('menu'));
+        menu.push({ id: Date.now().toString(), name, price: parseFloat(price), category, available: true });
+        localStorage.setItem('menu', JSON.stringify(menu));
+        adminViewMenu();
+        return;
+    }
+
     await fetch('/api/menu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -227,6 +364,13 @@ async function addItemPrompt() {
 
 async function deleteItem(id) {
     if (confirm("Delete this item?")) {
+        if (isLiveDemo) {
+            const menu = JSON.parse(localStorage.getItem('menu'));
+            const filtered = menu.filter(m => m.id !== id);
+            localStorage.setItem('menu', JSON.stringify(filtered));
+            adminViewMenu();
+            return;
+        }
         await fetch(`/api/menu/${id}`, { method: 'DELETE' });
         adminViewMenu();
     }
