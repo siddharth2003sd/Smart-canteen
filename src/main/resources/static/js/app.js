@@ -2,16 +2,23 @@ let currentUser = null;
 let currentAuthMode = 'login';
 let isLiveDemo = false;
 
-// Auto-detect if running on GitHub Pages or static host
-async function checkApiAvailability() {
-    try {
-        const res = await fetch('/api/menu', { method: 'GET' });
-        if (!res.ok) throw new Error();
-        isLiveDemo = false;
-    } catch (e) {
+// Auto-detect if running on GitHub Pages or local static host
+function checkApiAvailability() {
+    if (window.location.hostname.includes('github.io') || window.location.hostname === 'localhost' && !window.location.port) {
         console.log("Running in Live Demo mode (LocalStorage)");
         isLiveDemo = true;
         initMockData();
+    } else {
+        // Fallback check for dynamic hosts
+        fetch('/api/menu', { method: 'GET' })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                isLiveDemo = false;
+            })
+            .catch(() => {
+                isLiveDemo = true;
+                initMockData();
+            });
     }
 }
 
