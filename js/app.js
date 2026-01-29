@@ -32,7 +32,15 @@ function initMockData() {
             { id: '2', name: 'Penne Arrabbiata', price: 250.00, category: 'Pasta', available: true, image: 'assets/pasta.png' },
             { id: '3', name: 'Mexican Tacos', price: 150.00, category: 'Main', available: true, image: 'assets/tacos.png' },
             { id: '4', name: 'Glazed Donuts', price: 80.00, category: 'Dessert', available: true, image: 'assets/donuts.png' },
-            { id: '5', name: 'Premium Pizza', price: 350.00, category: 'Main', available: true, image: 'assets/pizza.png' }
+            { id: '5', name: 'Premium Pizza', price: 350.00, category: 'Main', available: true, image: 'assets/pizza.png' },
+            { id: '6', name: 'Avocado Toast', price: 150.00, category: 'Healthy', available: true, image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=1000&auto=format&fit=crop' },
+            { id: '7', name: 'Salmon Bowl', price: 420.00, category: 'Healthy', available: true, image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=1000&auto=format&fit=crop' },
+            { id: '8', name: 'Caesar Salad', price: 220.00, category: 'Healthy', available: true, image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=1000&auto=format&fit=crop' },
+            { id: '9', name: 'Berry Smoothie', price: 120.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=1000&auto=format&fit=crop' },
+            { id: '10', name: 'Ice Latte', price: 110.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=1000&auto=format&fit=crop' },
+            { id: '11', name: 'Paneer Tikka Roll', price: 180.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop' },
+            { id: '12', name: 'Veg Red Curry', price: 210.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?q=80&w=1000&auto=format&fit=crop' },
+            { id: '13', name: 'Matcha Cake', price: 160.00, category: 'Dessert', available: true, image: 'https://images.unsplash.com/photo-1506764483431-bc303bc3e1f1?q=80&w=1000&auto=format&fit=crop' }
         ]));
     }
     if (!localStorage.getItem('orders')) {
