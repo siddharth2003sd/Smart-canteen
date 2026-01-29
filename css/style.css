@@ -1,12 +1,14 @@
 :root {
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --bg-dark: #0f172a;
-    --text-main: #f8fafc;
-    --text-dim: #94a3b8;
-    --glass: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --accent: #f43f5e;
+    --primary: #111827;
+    --primary-hover: #000000;
+    --bg-light: #ffffff;
+    --text-main: #111827;
+    --text-dim: #6b7280;
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb;
+    --accent: #f3f4f6;
+    --success: #10b981;
+    --danger: #ef4444;
 }
 
 * {
@@ -17,54 +19,16 @@
 }
 
 body {
-    background-color: var(--bg-dark);
+    background-color: var(--bg-light);
     color: var(--text-main);
     min-height: 100vh;
     overflow-x: hidden;
+    letter-spacing: -0.01em;
 }
 
 .background-blobs {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-}
-
-.blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.15;
-    animation: move 20s infinite alternate;
-}
-
-.blob1 {
-    width: 500px;
-    height: 500px;
-    background: var(--primary);
-    top: -10%;
-    left: -10%;
-}
-
-.blob2 {
-    width: 400px;
-    height: 400px;
-    background: var(--accent);
-    bottom: -10%;
-    right: -10%;
-    animation-delay: -5s;
-}
-
-.blob3 {
-    width: 300px;
-    height: 300px;
-    background: #fbbf24;
-    top: 30%;
-    right: 20%;
-    animation-delay: -10s;
+    display: none;
+    /* Minimal means clean */
 }
 
 @keyframes move {
@@ -86,12 +50,11 @@ body {
 }
 
 .glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    padding: 2.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 /* Auth Styles */
@@ -102,12 +65,10 @@ body {
 }
 
 h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
     margin-bottom: 0.5rem;
-    background: linear-gradient(to right, #818cf8, #f43f5e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--primary);
 }
 
 .subtitle {
@@ -117,9 +78,10 @@ h1 {
 
 .tabs {
     display: flex;
-    background: rgba(0, 0, 0, 0.2);
+    background: #f9fafb;
     padding: 4px;
-    border-radius: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
     margin-bottom: 1.5rem;
 }
 
@@ -136,7 +98,7 @@ h1 {
 
 .tab.active {
     background: var(--primary);
-    color: white;
+    color: #ffffff;
 }
 
 .input-group {
@@ -145,35 +107,35 @@ h1 {
 
 input {
     width: 100%;
-    padding: 14px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    color: white;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-main);
     outline: none;
-    transition: 0.3s;
+    transition: all 0.2s;
 }
 
 input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    background: #fdfdfd;
 }
 
 .btn-primary {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     background: var(--primary);
     border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 600;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 500;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
 }
 
 .btn-primary:hover {
     background: var(--primary-hover);
-    transform: translateY(-2px);
+    transform: none;
 }
 
 /* Dashboard Styles */
@@ -191,6 +153,8 @@ input:focus {
     flex-direction: column;
     align-items: center;
     padding: 1.5rem 0;
+    border-right: 1px solid var(--card-border);
+    background: #f9fafb;
 }
 
 .nav-brand {
@@ -232,7 +196,8 @@ input:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 2rem;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--card-border);
 }
 
 .badge {
@@ -256,7 +221,7 @@ input:focus {
 .balance-card .value {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #10b981;
+    color: var(--success);
 }
 
 .hidden {
@@ -271,25 +236,25 @@ input:focus {
 }
 
 .food-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 1.2rem;
-    transition: 0.3s;
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.2s;
 }
 
 .food-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    transform: translateY(-5px);
+    border-color: var(--text-dim);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .food-img-container {
     width: 100%;
-    height: 120px;
-    border-radius: 12px;
+    height: 140px;
+    border-radius: 8px;
     overflow: hidden;
     margin-bottom: 1rem;
-    background: rgba(0, 0, 0, 0.2);
+    background: #f3f4f6;
 }
 
 .food-img-container img {
@@ -314,21 +279,28 @@ input:focus {
 }
 
 .food-card .category {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
     text-transform: uppercase;
     color: var(--text-dim);
-    letter-spacing: 1px;
+    letter-spacing: 0.05em;
 }
 
 .btn-small {
     margin-top: 1rem;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
     cursor: pointer;
-    background: var(--primary);
-    border: none;
-    color: white;
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    transition: 0.2s;
+}
+
+.btn-small:hover {
+    background: var(--accent);
 }
 
 /* Table Styles */

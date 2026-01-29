@@ -68,7 +68,7 @@ async function handleAuth(e) {
                 startSession();
             } else {
                 msg.innerText = "Success! Now please login.";
-                msg.style.color = "#10b981";
+                msg.style.color = "var(--success)";
                 showAuth('login');
             }
         } else {
