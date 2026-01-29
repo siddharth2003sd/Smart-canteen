@@ -21,9 +21,11 @@ function initMockData() {
     }
     if (!localStorage.getItem('menu')) {
         localStorage.setItem('menu', JSON.stringify([
-            { id: '1', name: 'Premium Pizza', price: 12.99, category: 'Main', available: true },
-            { id: '2', name: 'Fresh Salad', price: 8.50, category: 'Healthy', available: true },
-            { id: '3', name: 'Iced Latte', price: 4.50, category: 'Drinks', available: true }
+            { id: '1', name: 'Gourmet Burger', price: 12.99, category: 'Main', available: true, image: 'assets/burger.png' },
+            { id: '2', name: 'Penne Arrabbiata', price: 10.50, category: 'Pasta', available: true, image: 'assets/pasta.png' },
+            { id: '3', name: 'Mexican Tacos', price: 9.50, category: 'Main', available: true, image: 'assets/tacos.png' },
+            { id: '4', name: 'Glazed Donuts', price: 5.50, category: 'Dessert', available: true, image: 'assets/donuts.png' },
+            { id: '5', name: 'Premium Pizza', price: 15.99, category: 'Main', available: true, image: 'assets/pizza.png' }
         ]));
     }
     if (!localStorage.getItem('orders')) {
@@ -164,6 +166,9 @@ async function viewMenu() {
         const card = document.createElement('div');
         card.className = 'food-card';
         card.innerHTML = `
+            <div class="food-img-container">
+                <img src="${item.image || 'assets/default.png'}" alt="${item.name}">
+            </div>
             <span class="category">${item.category}</span>
             <h4>${item.name}</h4>
             <span class="price">$${item.price.toFixed(2)}</span>
