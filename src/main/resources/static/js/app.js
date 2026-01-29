@@ -40,7 +40,10 @@ function initMockData() {
             { id: '10', name: 'Ice Latte', price: 110.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=1000&auto=format&fit=crop' },
             { id: '11', name: 'Paneer Tikka Roll', price: 180.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop' },
             { id: '12', name: 'Veg Red Curry', price: 210.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?q=80&w=1000&auto=format&fit=crop' },
-            { id: '13', name: 'Matcha Cake', price: 160.00, category: 'Dessert', available: true, image: 'https://images.unsplash.com/photo-1506764483431-bc303bc3e1f1?q=80&w=1000&auto=format&fit=crop' }
+            { id: '13', name: 'Matcha Cake', price: 160.00, category: 'Dessert', available: true, image: 'https://images.unsplash.com/photo-1506764483431-bc303bc3e1f1?q=80&w=1000&auto=format&fit=crop' },
+            { id: '14', name: 'Truffle Pasta', price: 450.00, category: 'Pasta', available: true, image: 'https://images.unsplash.com/photo-1551183053-bf91a13a8ba5?q=80&w=1000&auto=format&fit=crop' },
+            { id: '15', name: 'Mango Lassi', price: 90.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1546173159-315724a31696?q=80&w=1000&auto=format&fit=crop' },
+            { id: '16', name: 'Grilled Chicken', price: 380.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=1000&auto=format&fit=crop' }
         ]));
     }
     if (!localStorage.getItem('orders')) {
