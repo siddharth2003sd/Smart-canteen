@@ -38,7 +38,7 @@ function initMockData() {
             { id: '8', name: 'Caesar Salad', price: 220.00, category: 'Healthy', available: true, image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=1000&auto=format&fit=crop' },
             { id: '9', name: 'Berry Smoothie', price: 120.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=1000&auto=format&fit=crop' },
             { id: '10', name: 'Ice Latte', price: 110.00, category: 'Beverage', available: true, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=1000&auto=format&fit=crop' },
-            { id: '11', name: 'Paneer Tikka Roll', price: 180.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=1000&auto=format&fit=crop' },
+            { id: '11', name: 'Korean Beef Bowl', price: 280.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=1000&auto=format&fit=crop' },
             { id: '12', name: 'Veg Red Curry', price: 210.00, category: 'Main', available: true, image: 'https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?q=80&w=1000&auto=format&fit=crop' },
             { id: '13', name: 'Matcha Cake', price: 160.00, category: 'Dessert', available: true, image: 'https://images.unsplash.com/photo-1506764483431-bc303bc3e1f1?q=80&w=1000&auto=format&fit=crop' },
             { id: '14', name: 'Truffle Pasta', price: 450.00, category: 'Pasta', available: true, image: 'https://images.unsplash.com/photo-1551183053-bf91a13a8ba5?q=80&w=1000&auto=format&fit=crop' },
