@@ -24,7 +24,7 @@ function checkApiAvailability() {
 
 function initMockData() {
     if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([{ id: 'admin-1', username: 'admin', password: '123', role: 'ADMIN' }]));
+        localStorage.setItem('users', JSON.stringify([{ id: 'admin-1', email: 'admin@smartcanteen.com', password: '123', role: 'ADMIN' }]));
     }
     if (!localStorage.getItem('menu')) {
         localStorage.setItem('menu', JSON.stringify([
@@ -57,19 +57,19 @@ function showAuth(mode) {
     currentAuthMode = mode;
     document.getElementById('tab-login').classList.toggle('active', mode === 'login');
     document.getElementById('tab-register').classList.toggle('active', mode === 'register');
-    document.getElementById('auth-btn').innerText = mode === 'login' ? 'Enter System' : 'Create Account';
+    document.getElementById('auth-btn').innerText = mode === 'login' ? 'Log In' : 'Create Account';
 }
 
 async function handleAuth(e) {
     e.preventDefault();
-    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const msg = document.getElementById('auth-msg');
 
     const endpoint = currentAuthMode === 'login' ? '/api/login' : '/api/register';
 
     if (isLiveDemo) {
-        handleDemoAuth(username, password, msg);
+        handleDemoAuth(email, password, msg);
         return;
     }
 
@@ -77,7 +77,7 @@ async function handleAuth(e) {
         const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ email, password })
         });
 
         if (res.ok) {
@@ -92,17 +92,22 @@ async function handleAuth(e) {
         } else {
             const err = await res.text();
             msg.innerText = err;
-            msg.style.color = "#f43f5e";
+            if (err.includes("Existing user")) {
+                msg.style.color = "var(--primary)";
+                showAuth('login');
+            } else {
+                msg.style.color = "#f43f5e";
+            }
         }
     } catch (e) {
         msg.innerText = "Connection failed";
     }
 }
 
-function handleDemoAuth(username, password, msg) {
+function handleDemoAuth(email, password, msg) {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     if (currentAuthMode === 'login') {
-        const user = users.find(u => u.username === username && u.password === password);
+        const user = users.find(u => u.email === email && u.password === password);
         if (user) {
             currentUser = user;
             if (user.role === 'CUSTOMER' && !user.balance) user.balance = 100.0;
@@ -112,12 +117,13 @@ function handleDemoAuth(username, password, msg) {
             msg.style.color = "#f43f5e";
         }
     } else {
-        if (users.find(u => u.username === username)) {
-            msg.innerText = "User exists";
-            msg.style.color = "#f43f5e";
+        if (users.find(u => u.email === email)) {
+            msg.innerText = "Existing user found, please log in to continue";
+            msg.style.color = "var(--primary)";
+            showAuth('login');
             return;
         }
-        users.push({ id: Date.now().toString(), username, password, role: 'CUSTOMER', balance: 100.0 });
+        users.push({ id: Date.now().toString(), email, password, role: 'CUSTOMER', balance: 100.0 });
         localStorage.setItem('users', JSON.stringify(users));
         msg.innerText = "Success! Now login.";
         msg.style.color = "#10b981";
@@ -128,7 +134,7 @@ function handleDemoAuth(username, password, msg) {
 function startSession() {
     document.getElementById('auth-section').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
-    document.getElementById('welcome-text').innerText = `Hello, ${currentUser.username}`;
+    document.getElementById('welcome-text').innerText = `Hello, ${currentUser.email.split('@')[0]}`;
     document.getElementById('user-role-badge').innerText = currentUser.role;
 
     if (currentUser.role === 'ADMIN') {

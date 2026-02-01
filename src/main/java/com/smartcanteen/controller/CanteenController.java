@@ -28,16 +28,22 @@ public class CanteenController {
     // --- Authentication ---
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-        User user = authService.login(credentials.get("username"), credentials.get("password"));
-        if (user != null) return ResponseEntity.ok(user);
+        User user = authService.login(credentials.get("email"), credentials.get("password"));
+        if (user != null)
+            return ResponseEntity.ok(user);
         return ResponseEntity.status(401).body("Invalid credentials");
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> data) {
-        boolean ok = authService.registerCustomer(data.get("username"), data.get("password"));
-        if (ok) return ResponseEntity.ok("Registered");
-        return ResponseEntity.badRequest().body("User already exists");
+        String email = data.get("email");
+        if (authService.existsByEmail(email)) {
+            return ResponseEntity.badRequest().body("Existing user found, please log in to continue");
+        }
+        boolean ok = authService.registerCustomer(email, data.get("password"));
+        if (ok)
+            return ResponseEntity.ok("Registered");
+        return ResponseEntity.badRequest().body("Registration failed");
     }
 
     // --- Menu ---
@@ -76,8 +82,9 @@ public class CanteenController {
     public ResponseEntity<?> placeOrder(@PathVariable String customerId, @RequestBody List<OrderItem> items) {
         Customer customer = (Customer) authService.getAllUsers().stream()
                 .filter(u -> u.getId().equals(customerId)).findFirst().orElse(null);
-        if (customer == null) return ResponseEntity.badRequest().body("Customer not found");
-        
+        if (customer == null)
+            return ResponseEntity.badRequest().body("Customer not found");
+
         try {
             orderService.placeOrder(customer, items);
             authService.updateUser(customer);

@@ -26,10 +26,10 @@ public class WebServer {
         orderService = new OrderService();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
-        
+
         // Static Files Handler
         server.createContext("/", new StaticHandler());
-        
+
         // API Handlers
         server.createContext("/api/login", new LoginHandler());
         server.createContext("/api/register", new RegisterHandler());
@@ -45,8 +45,9 @@ public class WebServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String path = exchange.getRequestURI().getPath();
-            if (path.equals("/")) path = "/index.html";
-            
+            if (path.equals("/"))
+                path = "/index.html";
+
             Path file = Paths.get("src/main/resources/static" + path);
             if (Files.exists(file)) {
                 byte[] bytes = Files.readAllBytes(file);
@@ -62,9 +63,12 @@ public class WebServer {
         }
 
         private String getContentType(String path) {
-            if (path.endsWith(".html")) return "text/html";
-            if (path.endsWith(".css")) return "text/css";
-            if (path.endsWith(".js")) return "application/javascript";
+            if (path.endsWith(".html"))
+                return "text/html";
+            if (path.endsWith(".css"))
+                return "text/css";
+            if (path.endsWith(".js"))
+                return "application/javascript";
             return "text/plain";
         }
     }
@@ -74,7 +78,7 @@ public class WebServer {
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
                 Map<String, String> body = parseJson(exchange.getRequestBody());
-                User user = authService.login(body.get("username"), body.get("password"));
+                User user = authService.login(body.get("email"), body.get("password"));
                 if (user != null) {
                     String json = userToJson(user);
                     sendResponse(exchange, 200, json);
@@ -90,9 +94,11 @@ public class WebServer {
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
                 Map<String, String> body = parseJson(exchange.getRequestBody());
-                boolean ok = authService.registerCustomer(body.get("username"), body.get("password"));
-                if (ok) sendResponse(exchange, 200, "Registered");
-                else sendResponse(exchange, 400, "User already exists");
+                boolean ok = authService.registerCustomer(body.get("email"), body.get("password"));
+                if (ok)
+                    sendResponse(exchange, 200, "Registered");
+                else
+                    sendResponse(exchange, 400, "User already exists");
             }
         }
     }
@@ -124,7 +130,7 @@ public class WebServer {
         public void handle(HttpExchange exchange) throws IOException {
             String method = exchange.getRequestMethod();
             String path = exchange.getRequestURI().getPath();
-            
+
             if ("GET".equals(method)) {
                 List<Order> orders;
                 if (path.equals("/api/orders")) {
@@ -140,15 +146,16 @@ public class WebServer {
                 Customer customer = (Customer) authService.getAllUsers().stream()
                         .filter(u -> u.getId().equals(custId) && u instanceof Customer)
                         .findFirst().orElse(null);
-                
+
                 if (customer == null) {
                     sendResponse(exchange, 404, "Customer not found");
                     return;
                 }
 
-                String body = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines().collect(Collectors.joining());
+                String body = new BufferedReader(new InputStreamReader(exchange.getRequestBody())).lines()
+                        .collect(Collectors.joining());
                 List<OrderItem> items = parseOrderItems(body);
-                
+
                 try {
                     orderService.placeOrder(customer, items);
                     authService.updateUser(customer);
@@ -186,14 +193,14 @@ public class WebServer {
                 Map<String, String> map = new HashMap<>();
                 for (String pair : obj.split(",")) {
                     String[] kv = pair.split(":");
-                    if (kv.length == 2) map.put(kv[0].trim(), kv[1].trim());
+                    if (kv.length == 2)
+                        map.put(kv[0].trim(), kv[1].trim());
                 }
                 items.add(new OrderItem(
-                    map.get("foodItemId"),
-                    map.get("foodName"),
-                    Integer.parseInt(map.get("quantity")),
-                    Double.parseDouble(map.get("priceAtTime"))
-                ));
+                        map.get("foodItemId"),
+                        map.get("foodName"),
+                        Integer.parseInt(map.get("quantity")),
+                        Double.parseDouble(map.get("priceAtTime"))));
             }
         }
         return items;
@@ -205,13 +212,15 @@ public class WebServer {
         body = body.replace("{", "").replace("}", "").replace("\"", "");
         for (String pair : body.split(",")) {
             String[] kv = pair.split(":");
-            if (kv.length == 2) map.put(kv[0].trim(), kv[1].trim());
+            if (kv.length == 2)
+                map.put(kv[0].trim(), kv[1].trim());
         }
         return map;
     }
 
     private static String userToJson(User u) {
-        String base = String.format("{\"id\":\"%s\",\"username\":\"%s\",\"role\":\"%s\"", u.getId(), u.getUsername(), u.getRole());
+        String base = String.format("{\"id\":\"%s\",\"email\":\"%s\",\"role\":\"%s\"", u.getId(), u.getEmail(),
+                u.getRole());
         if (u instanceof Customer) {
             return base + String.format(",\"balance\":%.2f}", ((Customer) u).getBalance());
         }
@@ -227,7 +236,8 @@ public class WebServer {
         String items = o.getItems().stream()
                 .map(i -> String.format("{\"foodName\":\"%s\",\"quantity\":%d}", i.getFoodName(), i.getQuantity()))
                 .collect(Collectors.joining(",", "[", "]"));
-        return String.format("{\"orderId\":\"%s\",\"customerId\":\"%s\",\"totalAmount\":%.2f,\"status\":\"%s\",\"items\":%s}",
+        return String.format(
+                "{\"orderId\":\"%s\",\"customerId\":\"%s\",\"totalAmount\":%.2f,\"status\":\"%s\",\"items\":%s}",
                 o.getOrderId(), o.getCustomerId(), o.getTotalAmount(), o.getStatus(), items);
     }
 }

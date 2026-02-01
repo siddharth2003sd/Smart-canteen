@@ -38,14 +38,14 @@ public class CanteenApp {
     }
 
     private void login() {
-        System.out.print("Username: ");
-        String username = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        currentUser = authService.login(username, password);
+        currentUser = authService.login(email, password);
         if (currentUser != null) {
-            System.out.println("Login successful! Welcome " + currentUser.getUsername());
+            System.out.println("Login successful! Welcome " + currentUser.getEmail());
             if (currentUser.getRole().equals("ADMIN")) {
                 adminDashboard();
             } else {
@@ -57,15 +57,15 @@ public class CanteenApp {
     }
 
     private void register() {
-        System.out.print("New Username: ");
-        String username = scanner.nextLine();
+        System.out.print("New Email: ");
+        String email = scanner.nextLine();
         System.out.print("New Password: ");
         String password = scanner.nextLine();
 
-        if (authService.registerCustomer(username, password)) {
+        if (authService.registerCustomer(email, password)) {
             System.out.println("Registration successful! You can now login.");
         } else {
-            System.out.println("Username already exists.");
+            System.out.println("Email already exists.");
         }
     }
 
@@ -120,9 +120,9 @@ public class CanteenApp {
         List<FoodItem> menu = menuService.getMenu();
         System.out.println("\n--- Canteen Menu ---");
         for (FoodItem item : menu) {
-            System.out.printf("[%s] %s - $%.2f (%s) [%s]\n", 
-                item.getId().substring(0, 4), item.getName(), item.getPrice(), 
-                item.getCategory(), item.isAvailable() ? "Available" : "N/A");
+            System.out.printf("[%s] %s - $%.2f (%s) [%s]\n",
+                    item.getId().substring(0, 4), item.getName(), item.getPrice(),
+                    item.getCategory(), item.isAvailable() ? "Available" : "N/A");
         }
     }
 
@@ -166,9 +166,9 @@ public class CanteenApp {
     }
 
     private void viewAllOrders() {
-        orderService.getAllOrders().forEach(o -> 
-            System.out.printf("Order #%s | Customer: %s | Total: $%.2f | Status: %s\n", 
-                o.getOrderId(), o.getCustomerId(), o.getTotalAmount(), o.getStatus()));
+        orderService.getAllOrders()
+                .forEach(o -> System.out.printf("Order #%s | Customer: %s | Total: $%.2f | Status: %s\n",
+                        o.getOrderId(), o.getCustomerId(), o.getTotalAmount(), o.getStatus()));
     }
 
     private void updateOrderStatus() {
@@ -177,7 +177,7 @@ public class CanteenApp {
         String id = scanner.nextLine();
         System.out.println("Select Status: 1. PREPARING, 2. READY, 3. COMPLETED, 4. CANCELLED");
         int s = Integer.parseInt(scanner.nextLine());
-        OrderStatus status = switch(s) {
+        OrderStatus status = switch (s) {
             case 1 -> OrderStatus.PREPARING;
             case 2 -> OrderStatus.READY;
             case 3 -> OrderStatus.COMPLETED;
@@ -205,8 +205,10 @@ public class CanteenApp {
             System.out.print("Select item # (0 to finish, -1 to cancel): ");
             int idx = Integer.parseInt(scanner.nextLine());
 
-            if (idx == 0) break;
-            if (idx == -1) return;
+            if (idx == 0)
+                break;
+            if (idx == -1)
+                return;
 
             if (idx > 0 && idx <= menu.size()) {
                 FoodItem selected = menu.get(idx - 1);
@@ -234,8 +236,8 @@ public class CanteenApp {
             return;
         }
         for (Order o : orders) {
-            System.out.printf("Order #%s | Status: %s | Total: $%.2f\n", 
-                o.getOrderId(), o.getStatus(), o.getTotalAmount());
+            System.out.printf("Order #%s | Status: %s | Total: $%.2f\n",
+                    o.getOrderId(), o.getStatus(), o.getTotalAmount());
             o.getItems().forEach(i -> System.out.printf("  - %s x%d\n", i.getFoodName(), i.getQuantity()));
         }
     }

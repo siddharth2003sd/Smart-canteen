@@ -13,17 +13,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/assets/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin((form) -> form
-                .loginPage("/login")
-                .defaultSuccessUrl("/dashboard")
-                .permitAll()
-            )
-            .logout((logout) -> logout.permitAll())
-            .csrf(csrf -> csrf.disable()); // Disabled for simplicity in this demo, usually should be enabled
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/assets/**").permitAll()
+                        .anyRequest().authenticated())
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .usernameParameter("email")
+                        .defaultSuccessUrl("/dashboard")
+                        .permitAll())
+                .oauth2Login((oauth2) -> oauth2
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/dashboard"))
+                .logout((logout) -> logout.permitAll())
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
