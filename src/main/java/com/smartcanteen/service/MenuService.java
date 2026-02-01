@@ -13,7 +13,8 @@ public class MenuService {
     public MenuService() {
         this.foodRepository = new StorageRepository<>("data/menu.csv", line -> {
             String[] parts = line.split(",");
-            return new FoodItem(parts[0], parts[1], Double.parseDouble(parts[2]), parts[3], Boolean.parseBoolean(parts[4]));
+            return new FoodItem(parts[0], parts[1], Double.parseDouble(parts[2]), parts[3],
+                    Boolean.parseBoolean(parts[4]), parts.length > 5 ? parts[5] : "assets/default.png");
         });
     }
 
@@ -26,7 +27,12 @@ public class MenuService {
     }
 
     public void addFoodItem(String name, double price, String category) {
-        foodRepository.add(new FoodItem(UUID.randomUUID().toString(), name, price, category, true));
+        foodRepository
+                .add(new FoodItem(UUID.randomUUID().toString(), name, price, category, true, "assets/default.png"));
+    }
+
+    public void addFoodItemWithImage(String name, double price, String category, String image) {
+        foodRepository.add(new FoodItem(UUID.randomUUID().toString(), name, price, category, true, image));
     }
 
     public void updateFoodItem(FoodItem item) {
@@ -45,7 +51,7 @@ public class MenuService {
         items.removeIf(item -> item.getId().equals(id));
         foodRepository.saveAll(items);
     }
-    
+
     public FoodItem getFoodItemById(String id) {
         return foodRepository.getAll().stream().filter(f -> f.getId().equals(id)).findFirst().orElse(null);
     }
