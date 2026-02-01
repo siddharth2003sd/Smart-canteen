@@ -22,11 +22,17 @@ function checkApiAvailability() {
     }
 }
 
+const MENU_VERSION = '6.0';
+
 function initMockData() {
     if (!localStorage.getItem('users')) {
         localStorage.setItem('users', JSON.stringify([{ id: 'admin-1', email: 'admin@smartcanteen.com', password: '123', role: 'ADMIN' }]));
     }
-    if (!localStorage.getItem('menu')) {
+
+    const currentVersion = localStorage.getItem('menuVersion');
+    if (!localStorage.getItem('menu') || currentVersion !== MENU_VERSION) {
+        console.log("Updating menu to version " + MENU_VERSION);
+        localStorage.setItem('menuVersion', MENU_VERSION);
         localStorage.setItem('menu', JSON.stringify([
             { id: '1', name: 'Gourmet Burger', price: 180.00, category: 'Main', available: true, image: 'assets/burger.png' },
             { id: '2', name: 'Penne Arrabbiata', price: 250.00, category: 'Pasta', available: true, image: 'assets/pasta.png' },
